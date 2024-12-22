@@ -194,15 +194,52 @@ class Haldan_anis:
 
         for d in np.arange(-0.2, 0.6, 0.1):
             lst_points.append([d, 0.0])
-            DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 0.0)
+            DMRG_state, lst_contractDMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 0.0)
             lst_DMRG.append(DMRG_state) # DMRG states
             lst_target.append(7) #'Haldane'
 
         DMRG_state = np.array(lst_DMRG)
         DMRG_target = np.array(lst_target)
         points = np.array(lst_points)
+        
+        lst_contract = []
+        lst_target_projection = []
 
-        return DMRG_state, DMRG_target, points
+        # make projections
+        P_plus_even, P_plus_odd, P_minus_even, P_minus_odd, P_plus, P_minus = Haldan_anis(L = self.L, ls = self.ls).P()
+
+        contraction_state_plus_even = P_plus_even.apply(DMRG_state); # projection state after P plus even projection
+        normalisation_factor_plus_even = np.sqrt(np.abs(contraction_state_plus_even.H @ contraction_state_plus_even))
+        if normalisation_factor_plus_even > 0.01:
+            contraction_state_plus_even = contraction_state_plus_even/normalisation_factor_plus_even
+            lst_contract.append(contraction_state_plus_even)
+            lst_target_projection.append(DMRG_target)
+
+        contraction_state_plus_odd = P_plus_odd.apply(DMRG_state); # projection state after P plus odd projection
+        normalisation_factor_plus_odd = np.sqrt(np.abs(contraction_state_plus_odd.H @ contraction_state_plus_odd))
+        if normalisation_factor_plus_odd > 0.01:
+            contraction_state_plus_odd = contraction_state_plus_odd/normalisation_factor_plus_odd
+            lst_contract.append(contraction_state_plus_odd)
+            lst_target_projection.append(DMRG_target)
+
+        contraction_state_minus_even = P_minus_even.apply(DMRG_state); # projection state after P minus even projection
+        normalisation_factor_minus_even = np.sqrt(np.abs(contraction_state_minus_even.H @ contraction_state_minus_even))
+        if normalisation_factor_minus_even > 0.01:
+            contraction_state_minus_even = contraction_state_minus_even/normalisation_factor_minus_even
+            lst_contract.append(contraction_state_minus_even)
+            lst_target_projection.append(DMRG_target)
+
+        contraction_state_minus_odd = P_minus_odd.apply(DMRG_state); # projection state after P minus odd projection
+        normalisation_factor_minus_odd = np.sqrt(np.abs(contraction_state_minus_odd.H @ contraction_state_minus_odd))
+        if normalisation_factor_minus_odd > 0.01:
+            contraction_state_minus_odd = contraction_state_minus_odd/normalisation_factor_minus_odd
+            lst_contract.append(contraction_state_minus_odd)
+            lst_target_projection.append(DMRG_target)
+
+        project_state = np.array(lst_contract)
+        projection_target = np.array(lst_target_projection)
+
+        return DMRG_state, DMRG_target, project_state, projection_target, points
     
 
     def generate_test_set(self):
