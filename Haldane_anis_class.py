@@ -112,130 +112,170 @@ class Haldan_anis:
         lst_points = []
         lst_DMRG = []
         lst_target = []
-
-        # Loop through E and D and classify points
-        for e in E:
-            if 0.8 <= e <= 2:
-                lst_points.append([-2, e])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = -2, e1 = e)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(1)  # 'large_ex'
-
-            elif -0.8 <= e < 0.8:
-                lst_points.append([-2, e])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = -2, e1 = e)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(3)  # 'z_neel'
-
-            elif -2 <= e < -0.8:
-                lst_points.append([-2, e])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = -2, e1 = e)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(2)  # 'large_ey'
-
-
-        for e in E:
-            if -2 < e < -0.4:
-                lst_points.append([2, e])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = 2, e1 = e)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(4)  # 'x_neel'
-
-            elif -0.4 < e < 0.4:
-                lst_points.append([2, e])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = 2, e1 = e)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(5)  # 'large_d'
-
-            elif 0.4 < e < 2.0:
-                lst_points.append([2, e])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = 2, e1 = e)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(6)  # 'y_neel'
-
-
-        for d in D:
-            if -2 < d < 0.2:
-                lst_points.append([d, 2])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 2)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(1)  # 'large_ex'
-
-            elif 0.2 < d < 2.0:
-                lst_points.append([d, 2])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 2)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(6)  # 'y_neel'
-
-        for d in D:
-            if -2 < d < 0.2:
-                lst_points.append([d, -2])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = -2)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(2)  # 'large_ey'
-
-            elif 0.2 < d < 2.0:
-                lst_points.append([d, -2])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = -2)
-                lst_DMRG.append(DMRG_state) # DMRG states
-                lst_target.append(4)  # 'x_neel'
-
-        for d in np.arange(-2, -0.5, 0.1):  # Added step size 0.1
-            lst_points.append([d, 0.0])
-            DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 0.0)
-            lst_DMRG.append(DMRG_state) # DMRG states
-            lst_target.append(3) 
-
-        for d in np.arange(0.9, 2, 0.1):
-            lst_points.append([d, 0.0])
-            DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 0.0)
-            lst_DMRG.append(DMRG_state) # DMRG states
-            lst_target.append(5)  # 'large_d'
-
-        for d in np.arange(-0.2, 0.6, 0.1):
-            lst_points.append([d, 0.0])
-            DMRG_state, lst_contractDMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 0.0)
-            lst_DMRG.append(DMRG_state) # DMRG states
-            lst_target.append(7) #'Haldane'
-
-        DMRG_state = np.array(lst_DMRG)
-        DMRG_target = np.array(lst_target)
-        points = np.array(lst_points)
-        
         lst_contract = []
         lst_target_projection = []
 
         # make projections
-        P_plus_even, P_plus_odd, P_minus_even, P_minus_odd, P_plus, P_minus = Haldan_anis(L = self.L, ls = self.ls).P()
+        P_plus_even, P_plus_odd, P_minus_even, P_minus_odd, _, _ = Haldan_anis(L = self.L, ls = self.ls).P()
 
-        contraction_state_plus_even = P_plus_even.apply(DMRG_state); # projection state after P plus even projection
-        normalisation_factor_plus_even = np.sqrt(np.abs(contraction_state_plus_even.H @ contraction_state_plus_even))
-        if normalisation_factor_plus_even > 0.01:
-            contraction_state_plus_even = contraction_state_plus_even/normalisation_factor_plus_even
-            lst_contract.append(contraction_state_plus_even)
-            lst_target_projection.append(DMRG_target)
+        def apply_projection(DMRG_state, target_value):
+            results = []
+            for projection in[P_plus_even, P_plus_odd, P_minus_even, P_minus_odd]:
+                contraction_state = projection.apply(DMRG_state)
+                results.append((contraction_state, target_value))
+            return results
 
-        contraction_state_plus_odd = P_plus_odd.apply(DMRG_state); # projection state after P plus odd projection
-        normalisation_factor_plus_odd = np.sqrt(np.abs(contraction_state_plus_odd.H @ contraction_state_plus_odd))
-        if normalisation_factor_plus_odd > 0.01:
-            contraction_state_plus_odd = contraction_state_plus_odd/normalisation_factor_plus_odd
-            lst_contract.append(contraction_state_plus_odd)
-            lst_target_projection.append(DMRG_target)
+        # Loop through E and D and classify points
+        for e in E:
+            if 0.8 <= e <= 2:
+                target_value = 1
+                lst_points.append([-2, e])
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = -2, e1 = e)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'large_ex'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
+               
+            elif -0.8 <= e < 0.8:
+                lst_points.append([-2, e])
+                target_value = 3
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = -2, e1 = e)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'z_neel'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
 
-        contraction_state_minus_even = P_minus_even.apply(DMRG_state); # projection state after P minus even projection
-        normalisation_factor_minus_even = np.sqrt(np.abs(contraction_state_minus_even.H @ contraction_state_minus_even))
-        if normalisation_factor_minus_even > 0.01:
-            contraction_state_minus_even = contraction_state_minus_even/normalisation_factor_minus_even
-            lst_contract.append(contraction_state_minus_even)
-            lst_target_projection.append(DMRG_target)
+            elif -2 <= e < -0.8:
+                lst_points.append([-2, e])
+                target_value = 2
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = -2, e1 = e)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'large_ey'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
 
-        contraction_state_minus_odd = P_minus_odd.apply(DMRG_state); # projection state after P minus odd projection
-        normalisation_factor_minus_odd = np.sqrt(np.abs(contraction_state_minus_odd.H @ contraction_state_minus_odd))
-        if normalisation_factor_minus_odd > 0.01:
-            contraction_state_minus_odd = contraction_state_minus_odd/normalisation_factor_minus_odd
-            lst_contract.append(contraction_state_minus_odd)
-            lst_target_projection.append(DMRG_target)
+        for e in E:
+            if -2 < e < -0.4:
+                lst_points.append([2, e])
+                target_value = 4
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = 2, e1 = e)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'x_neel'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
 
+            elif -0.4 < e < 0.4:
+                lst_points.append([2, e])
+                target_value = 5
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = 2, e1 = e)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'large_d'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
+
+            elif 0.4 < e < 2.0:
+                lst_points.append([2, e])
+                target_value = 6
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = 2, e1 = e)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'y_neel'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
+
+        for d in D:
+            if -2 < d < 0.2:
+                lst_points.append([d, 2])
+                target_value = 1
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 2)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'large_ex'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
+
+            elif 0.2 < d < 2.0:
+                lst_points.append([d, 2])
+                target_value = 6
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 2)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'y_neel'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
+
+        for d in D:
+            if -2 < d < 0.2:
+                lst_points.append([d, -2])
+                target_value = 2
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = -2)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'large_ey'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
+
+            elif 0.2 < d < 2.0:
+                lst_points.append([d, -2])
+                target_value = 4
+                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = -2)
+                lst_DMRG.append(DMRG_state) # DMRG states
+                lst_target.append(target_value)  # 'x_neel'
+                projection = apply_projection(DMRG_state, target_value) # making the projection states
+                for state, t_value in projection:
+                    lst_contract.append(state)
+                    lst_target_projection.append(t_value)
+            
+        for d in np.arange(-2, -0.5, 0.1):  # Added step size 0.1
+            lst_points.append([d, 0.0])
+            target_value = 3
+            DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 0.0)
+            lst_DMRG.append(DMRG_state) # DMRG states
+            lst_target.append(target_value)
+            projection = apply_projection(DMRG_state, target_value) # making the projection states
+            for state, t_value in projection:
+                lst_contract.append(state)
+                lst_target_projection.append(t_value)
+
+        for d in np.arange(0.9, 2, 0.1):
+            lst_points.append([d, 0.0])
+            target_value = 5
+            DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 0.0)
+            lst_DMRG.append(DMRG_state) # DMRG states
+            lst_target.append(target_value)  # 'large_d'
+            projection = apply_projection(DMRG_state, target_value) # making the projection states
+            for state, t_value in projection:
+                lst_contract.append(state)
+                lst_target_projection.append(t_value)
+
+        for d in np.arange(-0.2, 0.6, 0.1):
+            lst_points.append([d, 0.0])
+            target_value = 7
+            DMRG_state, lst_contractDMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = 0.0)
+            lst_DMRG.append(DMRG_state) # DMRG states
+            lst_target.append(target_value) #'Haldane'
+            projection = apply_projection(DMRG_state, target_value) # making the projection states
+            for state, t_value in projection:
+                lst_contract.append(state)
+                lst_target_projection.append(t_value)
+
+        DMRG_state = np.array(lst_DMRG)
+        DMRG_target = np.array(lst_target)
+        points = np.array(lst_points)
         project_state = np.array(lst_contract)
         projection_target = np.array(lst_target_projection)
 
@@ -251,7 +291,7 @@ class Haldan_anis:
         for e in E:
             for d in D:
                 lst_points.append([d,e])
-                DMRG_state, DMRG_energy = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = e); # make DMRG state for these specific value of h and k
+                DMRG_state, _ = Haldan_anis(L = self.L, ls = self.ls).DMRG(d1 = d, e1 = e); # make DMRG state for these specific value of h and k
                 lst_DMRG.append(DMRG_state) # DMRG states
 
 
