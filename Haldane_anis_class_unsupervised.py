@@ -6,8 +6,8 @@ class Haldan_anis:
 
     #-----------------------------------------------------------------------#
     def __init__(self, L, ls):
-        self.L = L # number of particle
-        self.ls = ls # the scale of dividing the range of h and k
+        self.L = L 
+        self.ls = ls 
     #-----------------------------------------------------------------------#
     def MPO(self, d, e):
         I = qu.eye(3)
