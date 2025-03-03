@@ -183,8 +183,8 @@ class Haldan_anis:
 
     
     def generate_test_set(self):
-        E = np.arange(-2, 2, 0.1)
-        D = np.arange(-2, 2, 0.1)
+        E = np.arange(-2, 2, 0.4)
+        D = np.arange(-2, 2, 0.4)
         
         def compute_dmrg(d, e):
             return [d, e], Haldan_anis(L = self.L, ls = self.ls).DMRG(d1=d, e1=e)[0]
