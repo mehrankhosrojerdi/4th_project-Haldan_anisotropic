@@ -30,27 +30,26 @@ class Haldan_anis_unsupervised:
         Sz = qu.spin_operator('Z', S=1).real
         
         # Define the MPO tensor (5x5 bond dimension)
-        W = np.zeros([6, 6, 3, 3], dtype=float)
+        W = np.zeros([5, 5, 3, 3], dtype=float)
 
         # Fill in the MPO tensor
         W[0, 0, :, :] = I  # Identity propagation
         W[0, 1, :, :] = J * Sx
         W[0, 2, :, :] = J * Sy
         W[0, 3, :, :] = J * Sz
-        W[0, 5, :, :] = D * (Sz @ Sz) + E * (Sx @ Sx - Sy @ Sy)  # On-site terms
+        W[0, 4, :, :] = D * (Sz @ Sz) + E * (Sx @ Sx - Sy @ Sy)  # On-site terms
 
         # Interaction terms between sites
-        W[1, 5, :, :] = Sx
-        W[2, 5, :, :] = Sy
-        W[3, 5, :, :] = Sz
-        W[4, 5, :, :] = I  # Propagate interactions
+        W[1, 4, :, :] = Sx
+        W[2, 4, :, :] = Sy
+        W[3, 4, :, :] = Sz
         
         # Final identity propagation term
-        W[5, 5, :, :] = I
+        W[4, 4, :, :] = I
 
         # Left and right boundary terms
         Wl = W[0, :, :, :]  # Left boundary tensor
-        Wr = W[:, 5, :, :]  # Right boundary tensor
+        Wr = W[:, 4, :, :]  # Right boundary tensor
 
         # Build the MPO
         H = qtn.MatrixProductOperator([Wl] + [W] * (self.L - 2) + [Wr])
