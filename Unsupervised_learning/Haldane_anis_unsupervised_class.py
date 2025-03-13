@@ -26,7 +26,7 @@ class Haldan_anis_unsupervised:
         J=1
         I = qu.eye(3).real  # Identity matrix for spin-1
         Sx = qu.spin_operator('X', S=1).real
-        Sy = qu.spin_operator('Y', S=1).real
+        Sy = qu.spin_operator('Y', S=1)
         Sz = qu.spin_operator('Z', S=1).real
         
         # Define the MPO tensor (5x5 bond dimension)
